@@ -1,33 +1,23 @@
-import { useEffect, useState } from 'react';
-import Navbar from './components/Navbar';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
+import Homepage from './pages/Homepage';
+import GeneralVisualization from './pages/GeneralVisualization';
+import AcrossRegions from './pages/AcrossRegions';
+import RankingDatasets from './pages/RankingDatasets';
+import SearchByDataset from './pages/SearchByDataset';
+import PageNotFound from './pages/PageNotFound';
 function App() {
-  const [tempData, setTempData] = useState('');
-
-  useEffect(function () {
-    async function expressFetchTest() {
-      try {
-        const res = await fetch('http://localhost:3000/');
-        const data = await res.json();
-
-        console.log(data);
-        setTempData(data);
-      } catch (err) {
-        if (err) {
-          console.log(err);
-        }
-      }
-    }
-
-    expressFetchTest();
-  }, []);
-
-  // TODO: Finish navbar
   return (
-    <div>
-      <Navbar />
-      <p>{tempData}</p>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route index element={<Homepage />} />
+        <Route path="visualization" element={<GeneralVisualization />} />
+        <Route path="regions" element={<AcrossRegions />} />
+        <Route path="ranking" element={<RankingDatasets />} />
+        <Route path="search" element={<SearchByDataset />} />
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
