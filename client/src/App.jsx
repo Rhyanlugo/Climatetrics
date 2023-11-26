@@ -1,11 +1,12 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-import Homepage from './pages/Homepage';
-import GeneralVisualization from './pages/GeneralVisualization';
 import AcrossRegions from './pages/AcrossRegions';
+import GeneralVisualization from './pages/GeneralVisualization';
+import Homepage from './pages/Homepage';
+import PageNotFound from './pages/PageNotFound';
 import RankingDatasets from './pages/RankingDatasets';
 import SearchByDataset from './pages/SearchByDataset';
-import PageNotFound from './pages/PageNotFound';
+
 function App() {
   return (
     <BrowserRouter>

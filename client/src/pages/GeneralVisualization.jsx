@@ -6,7 +6,11 @@ export default function GeneralVisualization() {
     <main className={styles.login}>
       <PageNav />
 
-      <section></section>
+      <section>
+        <div className="mt-5 bg-black">Test 1</div>
+
+        <div className="mt-5 bg-red-950">Test 2</div>
+      </section>
     </main>
   );
 }

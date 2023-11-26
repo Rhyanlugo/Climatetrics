@@ -15,9 +15,10 @@ export default function Homepage() {
             Climatetrics helps you visualize it.
           </h1>
           <h2>
-            We recognize that climate and weather play an integral role in all
-            aspects of our lives, not just on an individual basis but on a
-            global scale.
+            A series of glimpses into our changing climate as it has unfolded
+            for decades, offering a visualization of 🌎 transformation.
+            <br />
+            Explore how this phenomenon continues to shape our world.
           </h2>
 
           <Link to="/visualization" className="cta hover:bg-blue-200">
