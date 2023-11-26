@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import PageNav from '../components/PageNav';
 import styles from './GeneralVisualization.module.css';
 
@@ -6,11 +7,7 @@ export default function GeneralVisualization() {
     <main className={styles.login}>
       <PageNav />
 
-      <section>
-        <div className="mt-5 bg-black">Test 1</div>
-
-        <div className="mt-5 bg-red-950">Test 2</div>
-      </section>
+      <section></section>
     </main>
   );
 }
