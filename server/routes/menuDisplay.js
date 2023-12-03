@@ -59,6 +59,49 @@ menuDisplayRouter.route("/countryByCO2").get((req, res) => {
   });
 });
 
+menuDisplayRouter.route("/continentByCO2").get((req, res) => {
+  console.log("GETTING Countries");
+
+  oracledb.getConnection(dbConfig, (err, connection) => {
+    if (err) {
+      console.error(err.message);
+      res.status(500).send("Error connecting to the database");
+      return;
+    }
+
+    console.log("After connection");
+
+    const searchQuery = "SELECT DISTINCT continent FROM ESTELLEDENIS.WORLDPOPULATION";
+
+    connection.execute(
+      searchQuery,
+      {},
+      {
+        outFormat: oracledb.OBJECT,
+      },
+      (err, result) => {
+        if (err) {
+          console.error(err.message);
+
+          res.status(500).send("Error getting data from the database");
+          doRelease(connection);
+          return;
+        }
+
+        const continents = [];
+
+        result.rows.map((continent) => {
+          continents.push({
+            continentName: continent.CONTINENT,
+          });
+        });
+        res.json(continents);
+        doRelease(connection);
+      }
+    );
+  });
+});
+
 menuDisplayRouter.route("/industryByCO2").get((req, res) => {
   console.log("GETTING Industry");
 

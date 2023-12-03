@@ -21,7 +21,7 @@ export default function Homepage() {
             Explore how this phenomenon continues to shape our world.
           </h2>
 
-          <Link to="/visualization" className="cta hover:bg-blue-200">
+          <Link to="/industries" className="cta hover:bg-blue-200">
             Start visualizing now
           </Link>
         </section>

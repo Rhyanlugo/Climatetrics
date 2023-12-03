@@ -10,16 +10,16 @@ function PageNav() {
 
       <ul>
         <li>
-          <NavLink to="/visualization">General Visualization</NavLink>
+          <NavLink to="/industries">Across Industries</NavLink>
         </li>
         <li>
-          <NavLink to="/regions">Across Regions</NavLink>
+          <NavLink to="/annualTemperature">Annual Temperature Changes</NavLink>
         </li>
         <li>
-          <NavLink to="/Ranking">Ranking Datasets</NavLink>
+          <NavLink to="/acrossAirports">Across Airports</NavLink>
         </li>
         <li>
-          <NavLink to="/search">Search By Datasets</NavLink>
+          <NavLink to="/databaseCount">Database Count</NavLink>
         </li>
       </ul>
     </nav>

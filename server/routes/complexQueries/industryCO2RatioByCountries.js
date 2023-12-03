@@ -53,9 +53,9 @@ industryRatioByCountriesRouter.route("/").get((req, res) => {
     connection.execute(
       searchQuery,
       {
-        firstCountryValue: firstCountry,
-        secondCountryValue: secondCountry,
-        industryValue: industry,
+        firstCountry,
+        secondCountry,
+        industry,
       },
       {
         outFormat: oracledb.OBJECT,
