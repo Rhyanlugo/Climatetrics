@@ -1,11 +1,11 @@
 import express from "express";
 import oracledb from "oracledb";
-import { dbConfig } from "../configs/dbConfig.js";
-import doRelease from "../utils/databaseRelease.js";
+import { dbConfig } from "../../configs/dbConfig.js";
+import doRelease from "../../utils/databaseRelease.js";
 
-const industryOverTimeRouter = express.Router();
+const industryRatioByCountriesRouter = express.Router();
 
-industryOverTimeRouter.use((req, res, next) => {
+industryRatioByCountriesRouter.use((req, res, next) => {
   console.log("REQUEST:" + req.method + "   " + req.url);
   console.log("BODY:" + JSON.stringify(req.body));
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -15,7 +15,7 @@ industryOverTimeRouter.use((req, res, next) => {
   next();
 });
 
-industryOverTimeRouter.route("/compare").get((req, res) => {
+industryRatioByCountriesRouter.route("/").get((req, res) => {
   console.log("Getting comparison");
 
   oracledb.getConnection(dbConfig, (err, connection) => {
@@ -30,9 +30,9 @@ industryOverTimeRouter.route("/compare").get((req, res) => {
     // query: ?firstCountry=firstCountryValue&secondCountry=secondCountryValue&industry=industryValue
 
     console.log("After connection");
-    const firstCountryValue = req.query.firstCountry;
-    const secondCountryValue = req.query.secondCountry;
-    const industryValue = req.query.industry;
+    const firstCountry = req.query.firstCountry;
+    const secondCountry = req.query.secondCountry;
+    const industry = req.query.industry;
 
     const searchQuery = `SELECT t1.industry, t1.year, country1, percentage1, country2, percentage2
     FROM (
@@ -40,19 +40,23 @@ industryOverTimeRouter.route("/compare").get((req, res) => {
         FROM ESTELLEDENIS.CO2INDUSTRIESNORMALIZED c
         WHERE c.year = c2.year AND c.country = c2.country) AS percentage1
         FROM ESTELLEDENIS.CO2INDUSTRIESNORMALIZED c2
-        WHERE c2.country = :firstCountryValue AND c2.industry = :industryValue) t1
+        WHERE c2.country = :firstCountry AND c2.industry = :industry) t1
         FULL JOIN (
         SELECT c4.year, c4.country AS country2, c4.industry, emission / (SELECT SUM(emission)
         FROM ESTELLEDENIS.CO2INDUSTRIESNORMALIZED c3
         WHERE c3.year = c4.year AND c3.country = c4.country) AS percentage2
         FROM ESTELLEDENIS.CO2INDUSTRIESNORMALIZED c4
-        WHERE c4.country = :secondCountryValue AND c4.industry = :industryValue) t2
+        WHERE c4.country = :secondCountry AND c4.industry = :industry) t2
     ON t1.year = t2.year AND t1.industry = t2.industry
     ORDER BY year`;
 
     connection.execute(
       searchQuery,
-      { firstCountryValue, secondCountryValue, industryValue },
+      {
+        firstCountryValue: firstCountry,
+        secondCountryValue: secondCountry,
+        industryValue: industry,
+      },
       {
         outFormat: oracledb.OBJECT,
       },
@@ -64,10 +68,10 @@ industryOverTimeRouter.route("/compare").get((req, res) => {
           return;
         }
 
-        const industryComparison = [];
+        const countriesByIndustry = [];
 
         result.rows.map((comparison) => {
-          industryComparison.push({
+          countriesByIndustry.push({
             industry: comparison.INDUSTRY,
             year: comparison.YEAR,
             firstCountry: comparison.COUNTRY1,
@@ -76,11 +80,11 @@ industryOverTimeRouter.route("/compare").get((req, res) => {
             secondCountryPercentage: comparison.PERCENTAGE2,
           });
         });
-        res.json(industryComparison);
+        res.json(countriesByIndustry);
         doRelease(connection);
       }
     );
   });
 });
 
-export default industryOverTimeRouter;
+export default industryRatioByCountriesRouter;

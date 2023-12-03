@@ -1,8 +1,11 @@
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import express from "express";
-import industryOverTimeRouter from "./routes/industryOverTime.js";
 import menuDisplayRouter from "./routes/menuDisplay.js";
+import industryRatioByCountriesRouter from "./routes/complexQueries/industryCO2RatioByCountries.js";
+import industryRatioByContinentRouter from "./routes/complexQueries/industryCO2RatioByContinent.js";
+import annualTemperatureChangeByCountriesRouter from "./routes/complexQueries/annualTemperatureChangeByCountries.js";
+import airportWeatherSeverity from "./routes/complexQueries/airportsWeatherSeverity.js";
 
 dotenv.config();
 const app = express();
@@ -14,8 +17,13 @@ process.env.STATUS === "production"
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ type: "*/*" }));
-app.use("/industryOverTime", industryOverTimeRouter);
-app.use("/menuDisplay", menuDisplayRouter);
+
+// Routes
+app.use("/menuDisplay", menuDisplayRouter); // Routes for menus
+app.use("/industryByCountries", industryRatioByCountriesRouter); // Complex Query 1
+app.use("/industryByContinent", industryRatioByContinentRouter); // Complex Query 2
+app.use("/annualTemperatureChange", annualTemperatureChangeByCountriesRouter); // Complex Query 3
+app.use("/airportWeatherSeverity", airportWeatherSeverity); // Complex Query 4
 
 app.listen(PORT, () => {
   console.log(`Server in ${process.env.STATUS} mode, listening on port: (${PORT}).`);

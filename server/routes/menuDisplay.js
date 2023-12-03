@@ -15,7 +15,7 @@ menuDisplayRouter.use((req, res, next) => {
   next();
 });
 
-menuDisplayRouter.route("/country").get((req, res) => {
+menuDisplayRouter.route("/countryByCO2").get((req, res) => {
   console.log("GETTING Countries");
 
   oracledb.getConnection(dbConfig, (err, connection) => {
@@ -59,7 +59,7 @@ menuDisplayRouter.route("/country").get((req, res) => {
   });
 });
 
-menuDisplayRouter.route("/industry").get((req, res) => {
+menuDisplayRouter.route("/industryByCO2").get((req, res) => {
   console.log("GETTING Industry");
 
   oracledb.getConnection(dbConfig, (err, connection) => {
@@ -97,6 +97,94 @@ menuDisplayRouter.route("/industry").get((req, res) => {
           });
         });
         res.json(industries);
+        doRelease(connection);
+      }
+    );
+  });
+});
+
+menuDisplayRouter.route("/countryByAnnualTemperature").get((req, res) => {
+  console.log("GETTING Countries");
+
+  oracledb.getConnection(dbConfig, (err, connection) => {
+    if (err) {
+      console.error(err.message);
+      res.status(500).send("Error connecting to the database");
+      return;
+    }
+
+    console.log("After connection");
+
+    const searchQuery =
+      "SELECT DISTINCT country FROM ESTELLEDENIS.ANNUALSURFACETEMPCHANGENORMALIZED ORDER BY country";
+
+    connection.execute(
+      searchQuery,
+      {},
+      {
+        outFormat: oracledb.OBJECT,
+      },
+      (err, result) => {
+        if (err) {
+          console.error(err.message);
+
+          res.status(500).send("Error getting data from the database");
+          doRelease(connection);
+          return;
+        }
+
+        const countries = [];
+
+        result.rows.map((country) => {
+          countries.push({
+            countryName: country.COUNTRY,
+          });
+        });
+        res.json(countries);
+        doRelease(connection);
+      }
+    );
+  });
+});
+
+menuDisplayRouter.route("/airportsByWeatherEvents").get((req, res) => {
+  console.log("GETTING airports");
+
+  oracledb.getConnection(dbConfig, (err, connection) => {
+    if (err) {
+      console.error(err.message);
+      res.status(500).send("Error connecting to the database");
+      return;
+    }
+
+    console.log("After connection");
+
+    const searchQuery =
+      "SELECT DISTINCT airport FROM ESTELLEDENIS.USWEATHEREVENTS ORDER BY airport";
+
+    connection.execute(
+      searchQuery,
+      {},
+      {
+        outFormat: oracledb.OBJECT,
+      },
+      (err, result) => {
+        if (err) {
+          console.error(err.message);
+
+          res.status(500).send("Error getting data from the database");
+          doRelease(connection);
+          return;
+        }
+
+        const airports = [];
+
+        result.rows.map((airport) => {
+          airports.push({
+            airport: airport.AIRPORT,
+          });
+        });
+        res.json(airports);
         doRelease(connection);
       }
     );
