@@ -118,7 +118,7 @@ router.route("/employees/search").get((req, res) => {
     }
 
     // params: /:searchType/:searchValue
-    // query: ?searchType=%searchValue=
+    // query: ?searchType=searchValue=
 
     console.log("After connection");
     const searchType = req.query.searchType;

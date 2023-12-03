@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import PageNav from '../components/PageNav';
 import styles from './GeneralVisualization.module.css';
 
