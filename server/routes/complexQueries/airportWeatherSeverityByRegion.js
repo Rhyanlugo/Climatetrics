@@ -3,9 +3,9 @@ import oracledb from "oracledb";
 import { dbConfig } from "../../configs/dbConfig.js";
 import doRelease from "../../utils/databaseRelease.js";
 
-const airportWeatherSeverity = express.Router();
+const airportWeatherSeverityByRegion = express.Router();
 
-airportWeatherSeverity.use((req, res, next) => {
+airportWeatherSeverityByRegion.use((req, res, next) => {
   console.log("REQUEST:" + req.method + "   " + req.url);
   console.log("BODY:" + JSON.stringify(req.body));
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -15,7 +15,7 @@ airportWeatherSeverity.use((req, res, next) => {
   next();
 });
 
-airportWeatherSeverity.route("/").get((req, res) => {
+airportWeatherSeverityByRegion.route("/").get((req, res) => {
   console.log("Getting comparison");
 
   oracledb.getConnection(dbConfig, (err, connection) => {
@@ -30,20 +30,21 @@ airportWeatherSeverity.route("/").get((req, res) => {
     // query: ?firstCountry=firstCountryValue&secondCountry=secondCountryValue&industry=industryValue
 
     console.log("After connection");
-    const airport = req.query.airport;
+    const region = req.query.region;
 
-    const searchQuery = `SELECT EXTRACT(YEAR FROM starttimeutc) AS year, EXTRACT(MONTH FROM starttimeutc) AS month, e.AIRPORT, SUM(s.RANKING) AS weather_severity, SUM(weather_ct) AS n_of_delays, SUM(weather_delay) AS time_delays
+    const searchQuery = `SELECT EXTRACT(YEAR FROM starttimeutc) AS year, EXTRACT(MONTH FROM starttimeutc) AS month, z.region, SUM(s.RANKING) AS weather_severity, SUM(weather_ct) AS n_of_delays, SUM(weather_delay) AS time_delays
     FROM USWEATHEREVENTS e
     JOIN USWEATHEREVENTSSCALE s ON e.severity = s.severity
     RIGHT JOIN FLIGHTDELAYS f ON f.airport = e.airport AND EXTRACT(YEAR FROM starttimeutc) = f.year AND EXTRACT(MONTH FROM starttimeutc) = f.month
-    WHERE e.airport = :airport
-    GROUP BY EXTRACT(YEAR FROM starttimeutc), EXTRACT(MONTH FROM starttimeutc), e.AIRPORT
+    JOIN ZIPCODEINDEX z ON SUBSTR(e.zipcode, 1, 1) = z.firstdigit
+    WHERE z.region = :region
+    GROUP BY EXTRACT(YEAR FROM starttimeutc), EXTRACT(MONTH FROM starttimeutc), z.region
     ORDER BY EXTRACT(YEAR FROM starttimeutc), EXTRACT(MONTH FROM starttimeutc)`;
 
     connection.execute(
       searchQuery,
       {
-        airport,
+        region,
       },
       {
         outFormat: oracledb.OBJECT,
@@ -56,23 +57,24 @@ airportWeatherSeverity.route("/").get((req, res) => {
           return;
         }
 
-        const airport = [];
+        const regions = [];
 
-        result.rows.map((airportData) => {
-          airport.push({
-            year: airportData.YEAR,
-            month: airportData.MONTH,
-            airport: airportData.airport,
-            weatherSeverity: airportData.WEATHER_SEVERITY,
-            delays: airportData.N_OF_DELAYS,
-            timeDelays: airportData.TIME_DELAYS,
+        result.rows.map((region) => {
+          regions.push({
+            year: region.YEAR,
+            month: region.MONTH,
+            region: region.REGION,
+            weatherSeverity: region.WEATHER_SEVERITY,
+            delays: region.N_OF_DELAYS,
+            timeDelays: region.TIME_DELAYS,
           });
         });
-        res.json(airport);
+        res.json(regions);
         doRelease(connection);
+        console.log("released connection");
       }
     );
   });
 });
 
-export default airportWeatherSeverity;
+export default airportWeatherSeverityByRegion;

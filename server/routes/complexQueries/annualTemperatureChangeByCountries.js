@@ -31,21 +31,58 @@ annualTemperatureChangeByCountriesRouter.route("/").get((req, res) => {
     const firstCountry = req.query.firstCountry;
     const secondCountry = req.query.secondCountry;
 
-    const searchQuery = `SELECT t1.year, t1.country, t1.tempchange, t1.gdp, t1.co2, t2.country, t2.tempchange, t2.gdp, t2.co2
-    FROM
-    (SELECT a.country, a.year, a.tempchange, c.value AS gdp, e.value AS co2
-    FROM ESTELLEDENIS.ANNUALSURFACETEMPCHANGENORMALIZED a
-    JOIN ESTELLEDENIS.COUNTRYGDP c ON a.country_id = c.country_id AND a.year = c.year
-    JOIN ESTELLEDENIS.CO2EMISSIONS e ON c.country_id = e.country_id AND c.year = e.year
-    WHERE c.countryname = :firstCountry) t1
-    FULL JOIN (
-    SELECT a.country, a.year, a.tempchange, c.value AS gdp, e.value AS co2
-    FROM ESTELLEDENIS.ANNUALSURFACETEMPCHANGENORMALIZED a
-    JOIN ESTELLEDENIS.COUNTRYGDP c ON a.country_id = c.country_id AND a.year = c.year
-    JOIN ESTELLEDENIS.CO2EMISSIONS e ON c.country_id = e.country_id AND c.year = e.year
-    WHERE c.countryname = :secondCountry) t2
-    ON t1.year = t2.year
-    ORDER BY year`;
+    const searchQuery = `SELECT 
+    t1.year, 
+    MAX(t1.country) AS country1,
+    MAX(t1.tempchange) AS tempchange1, 
+    MAX(t1.gdp) AS gdp1, 
+    MAX(t1.co2) AS co2_1, 
+    MAX(t2.country) AS country2,
+    MAX(t2.tempchange) AS tempchange2, 
+    MAX(t2.gdp) AS gdp2, 
+    MAX(t2.co2) AS co2_2
+FROM
+    (
+        SELECT 
+            a.country, 
+            a.year, 
+            a.tempchange, 
+            c.value AS gdp, 
+            e.value AS co2
+        FROM 
+            ANNUALSURFACETEMPCHANGENORMALIZED a
+        JOIN 
+            COUNTRYGDP c ON a.country_id = c.country_id AND a.year = c.year
+        JOIN 
+            CO2EMISSIONS e ON c.country_id = e.country_id AND c.year = e.year
+        WHERE 
+            c.countryname = :firstCountry
+    ) t1
+FULL JOIN 
+    (
+        SELECT 
+            a.country, 
+            a.year, 
+            a.tempchange, 
+            c.value AS gdp, 
+            e.value AS co2
+        FROM 
+            ANNUALSURFACETEMPCHANGENORMALIZED a
+        JOIN 
+            COUNTRYGDP c ON a.country_id = c.country_id AND a.year = c.year
+        JOIN 
+            CO2EMISSIONS e ON c.country_id = e.country_id AND c.year = e.year
+        WHERE 
+            c.countryname = :secondCountry
+    ) t2
+ON 
+    t1.year = t2.year
+WHERE 
+    t1.year IS NOT NULL AND t2.year IS NOT NULL
+GROUP BY 
+    t1.year
+ORDER BY 
+    t1.year`;
 
     connection.execute(
       searchQuery,
@@ -66,14 +103,14 @@ annualTemperatureChangeByCountriesRouter.route("/").get((req, res) => {
         result.rows.map((comparison) => {
           annualTemperatureChangeByCountries.push({
             year: comparison.YEAR,
-            firstCountry: comparison.COUNTRY,
-            firstCountryTempChange: comparison.TEMPCHANGE,
-            firstCountryGDP: comparison.GDP,
-            firstCountryCO2: comparison.CO2,
-            secondCountry: comparison.COUNTRY_1,
-            secondCountryTempChange: comparison.TEMPCHANGE_1,
-            secondCountryGDP: comparison.GDP_1,
-            secondCountryCO2: comparison.CO2_1,
+            firstCountry: comparison.COUNTRY1,
+            firstCountryTempChange: comparison.TEMPCHANGE1,
+            firstCountryGDP: comparison.GDP1,
+            firstCountryCO2: comparison.CO2_1,
+            secondCountry: comparison.COUNTRY2,
+            secondCountryTempChange: comparison.TEMPCHANGE2,
+            secondCountryGDP: comparison.GDP2,
+            secondCountryCO2: comparison.CO2_2,
           });
         });
         res.json(annualTemperatureChangeByCountries);

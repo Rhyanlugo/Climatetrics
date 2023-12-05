@@ -9,6 +9,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import zoomPlugin from 'chartjs-plugin-zoom';
 
 ChartJS.register(
   CategoryScale,
@@ -18,15 +19,16 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
+  zoomPlugin,
 );
 
 export function CountriesMultiLineChart({
   labels,
   firstCountry,
-  firstCountryPercentage,
+  firstCountryData,
   secondCountry,
-  secondCountryPercentage,
-  industry,
+  secondCountryData,
+  typeOfData,
 }) {
   const options = {
     responsive: true,
@@ -38,7 +40,7 @@ export function CountriesMultiLineChart({
     plugins: {
       title: {
         display: true,
-        text: `Comparison of ${industry} yearly percentage emission between ${firstCountry} and ${secondCountry}`,
+        text: `Comparison of ${typeOfData} yearly percentage emission between ${firstCountry} and ${secondCountry}`,
       },
     },
     scales: {
@@ -56,6 +58,21 @@ export function CountriesMultiLineChart({
         },
       },
     },
+    zoom: {
+      pan: {
+        enabled: true,
+        mode: 'x',
+      },
+      zoom: {
+        pinch: {
+          enabled: true, // Enable pinch zooming
+        },
+        wheel: {
+          enabled: true, // Enable wheel zooming
+        },
+        mode: 'x',
+      },
+    },
   };
 
   const data = {
@@ -63,14 +80,14 @@ export function CountriesMultiLineChart({
     datasets: [
       {
         label: `${firstCountry}`,
-        data: labels.map((el, index) => firstCountryPercentage[index]),
+        data: firstCountryData,
         borderColor: 'rgb(255, 99, 132)',
         backgroundColor: 'rgba(255, 99, 132, 0.5)',
         yAxisID: 'y',
       },
       {
         label: `${secondCountry}`,
-        data: labels.map((el, index) => secondCountryPercentage[index]),
+        data: secondCountryData,
         borderColor: 'rgb(53, 162, 235)',
         backgroundColor: 'rgba(53, 162, 235, 0.5)',
         yAxisID: 'y1',

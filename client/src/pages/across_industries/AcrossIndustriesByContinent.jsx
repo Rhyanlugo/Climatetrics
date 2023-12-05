@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { ContinentBarChart } from '../../components/ContinentBarChart';
+import { ContinentBarChart } from '../../components/graphs/ContinentBarChart';
 import Spinner from '../../components/Spinner';
+import SelectedIndustry from '../../components/SelectedIndustry';
 
 export default function AcrossIndustriesByContinent() {
   const [continents, setContinents] = useState([]);
@@ -84,21 +85,29 @@ export default function AcrossIndustriesByContinent() {
 
   useEffect(() => {
     const update = () => {
-      let newYear = [];
-      let newRatioChange = [];
+      try {
+        setIsLoading(true);
 
-      if (years.length > 0 || ratioChange.length > 0) {
-        setYears([]);
-        setRatioChange([]);
+        let newYear = [];
+        let newRatioChange = [];
+
+        if (years.length > 0 || ratioChange.length > 0) {
+          setYears([]);
+          setRatioChange([]);
+        }
+
+        industriesByContinent.map((continentByYear) => {
+          newYear.push(continentByYear.year);
+          newRatioChange.push(continentByYear.ratioChange * 100);
+        });
+
+        setYears(newYear);
+        setRatioChange(newRatioChange);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
       }
-
-      industriesByContinent.map((continentByYear) => {
-        newYear.push(continentByYear.year);
-        newRatioChange.push(continentByYear.ratioChange * 100);
-      });
-
-      setYears(newYear);
-      setRatioChange(newRatioChange);
     };
 
     update();
@@ -106,24 +115,22 @@ export default function AcrossIndustriesByContinent() {
 
   return (
     <>
-      <div className="flex items-center">
+      <div className="flex items-center justify-center">
         <SetSelectedContinent
           selectedContinent={selectedContinent}
           setSelectedContinent={setSelectedContinent}
           continents={continents}
-        ></SetSelectedContinent>
-        <SetSelectedIndustry
+        />
+        <SelectedIndustry
           selectedIndustry={selectedIndustry}
           setSelectedIndustry={setSelectedIndustry}
           industries={industries}
         />
       </div>
-      <div className="mt-4 flex items-center justify-center rounded-lg border bg-white shadow-md">
+
+      <div className="mt-4 flex items-center justify-center rounded-lg border bg-gray-200 shadow-md">
         {isLoading ? (
-          <div className="text-bl mt-5 grid grid-rows-2 items-center justify-center text-lg font-semibold text-black">
-            <Spinner />
-            <p>Loading data...</p>
-          </div>
+          <DisplayLoading />
         ) : (
           <ContinentBarChart
             continent={selectedContinent}
@@ -136,6 +143,17 @@ export default function AcrossIndustriesByContinent() {
     </>
   );
 }
+
+function DisplayLoading() {
+  return (
+    <div className="mt-5 grid grid-rows-2 items-center justify-center text-lg font-semibold text-black">
+      <Spinner />
+      <p>Loading data...</p>
+    </div>
+  );
+}
+
+function CalculateAverageYearlyChange() {}
 
 function SetSelectedContinent({
   selectedContinent,
@@ -159,30 +177,5 @@ function SetSelectedContinent({
         ))}
       </select>
     </div>
-  );
-}
-
-function SetSelectedIndustry({
-  selectedIndustry,
-  setSelectedIndustry,
-  industries,
-}) {
-  return (
-    <>
-      <label htmlFor="countries">Choose an industry</label>
-      <select
-        name="countries"
-        id="countries"
-        value={selectedIndustry}
-        onChange={(e) => setSelectedIndustry(e.target.value)}
-        className="mx-2 w-72 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-      >
-        {industries.map((industry) => (
-          <option key={industry.industryName} value={industry.industryName}>
-            {industry.industryName}
-          </option>
-        ))}
-      </select>
-    </>
   );
 }

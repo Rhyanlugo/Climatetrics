@@ -34,15 +34,15 @@ industryRatioByContinentRouter.route("/").get((req, res) => {
     const industry = req.query.industry;
 
     const searchQuery = `SELECT c2.year, w.continent, SUM(c2.emission) / SUM(total_emission.total) AS ratio
-    FROM ESTELLEDENIS.CO2INDUSTRIESNORMALIZED c2
-    JOIN ESTELLEDENIS.WORLDPOPULATION w ON c2.country_id = w.country_id
+    FROM CO2INDUSTRIESNORMALIZED c2
+    JOIN WORLDPOPULATION w ON c2.country_id = w.country_id
     JOIN (
         SELECT
             c.year,
             c.country,
             SUM(c.emission) AS total
         FROM
-            ESTELLEDENIS.CO2INDUSTRIESNORMALIZED c
+            CO2INDUSTRIESNORMALIZED c
         GROUP BY
             c.year, c.country
     ) total_emission ON c2.year = total_emission.year AND c2.country = total_emission.country

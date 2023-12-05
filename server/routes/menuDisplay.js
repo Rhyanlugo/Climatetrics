@@ -202,8 +202,7 @@ menuDisplayRouter.route("/airportsByWeatherEvents").get((req, res) => {
 
     console.log("After connection");
 
-    const searchQuery =
-      "SELECT DISTINCT airport FROM ESTELLEDENIS.USWEATHEREVENTS ORDER BY airport";
+    const searchQuery = "SELECT DISTINCT airport FROM FLIGHTDELAYS  ORDER BY airport";
 
     connection.execute(
       searchQuery,
@@ -228,6 +227,49 @@ menuDisplayRouter.route("/airportsByWeatherEvents").get((req, res) => {
           });
         });
         res.json(airports);
+        doRelease(connection);
+      }
+    );
+  });
+});
+
+menuDisplayRouter.route("/regionsAirportsByWeatherEvents").get((req, res) => {
+  console.log("GETTING regions");
+
+  oracledb.getConnection(dbConfig, (err, connection) => {
+    if (err) {
+      console.error(err.message);
+      res.status(500).send("Error connecting to the database");
+      return;
+    }
+
+    console.log("After connection");
+
+    const searchQuery = "SELECT DISTINCT region FROM ESTELLEDENIS.ZIPCODEINDEX ORDER BY region";
+
+    connection.execute(
+      searchQuery,
+      {},
+      {
+        outFormat: oracledb.OBJECT,
+      },
+      (err, result) => {
+        if (err) {
+          console.error(err.message);
+
+          res.status(500).send("Error getting data from the database");
+          doRelease(connection);
+          return;
+        }
+
+        const regions = [];
+
+        result.rows.map((region) => {
+          regions.push({
+            region: region.REGION,
+          });
+        });
+        res.json(regions);
         doRelease(connection);
       }
     );

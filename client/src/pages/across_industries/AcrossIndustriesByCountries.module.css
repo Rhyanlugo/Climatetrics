@@ -1,0 +1,15 @@
+.left-bg {
+  background-color: rgb(255, 99, 132);
+}
+
+.left-bg-less {
+  background-color: rgba(255, 99, 132, 0.8);
+}
+
+.right-bg {
+  background-color: rgb(53, 162, 235);
+}
+
+.right-bg-less {
+  background-color: rgba(53, 162, 235, 0.8);
+}

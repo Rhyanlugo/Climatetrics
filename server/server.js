@@ -6,6 +6,8 @@ import industryRatioByCountriesRouter from "./routes/complexQueries/industryCO2R
 import industryRatioByContinentRouter from "./routes/complexQueries/industryCO2RatioByContinent.js";
 import annualTemperatureChangeByCountriesRouter from "./routes/complexQueries/annualTemperatureChangeByCountries.js";
 import airportWeatherSeverity from "./routes/complexQueries/airportsWeatherSeverity.js";
+import airportWeatherSeverityByRegion from "./routes/complexQueries/airportWeatherSeverityByRegion.js";
+import databaseCountRouter from "./routes/complexQueries/databaseCount.js";
 
 dotenv.config();
 const app = express();
@@ -24,6 +26,8 @@ app.use("/industryByCountries", industryRatioByCountriesRouter); // Complex Quer
 app.use("/industryByContinent", industryRatioByContinentRouter); // Complex Query 2
 app.use("/annualTemperatureChange", annualTemperatureChangeByCountriesRouter); // Complex Query 3
 app.use("/airportWeatherSeverity", airportWeatherSeverity); // Complex Query 4
+app.use("/airportWeatherSeverityByRegion", airportWeatherSeverityByRegion); // Complex Query 5
+app.use("/databaseCount", databaseCountRouter); // Database Count
 
 app.listen(PORT, () => {
   console.log(`Server in ${process.env.STATUS} mode, listening on port: (${PORT}).`);

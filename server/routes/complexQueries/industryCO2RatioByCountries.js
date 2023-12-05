@@ -37,15 +37,15 @@ industryRatioByCountriesRouter.route("/").get((req, res) => {
     const searchQuery = `SELECT t1.industry, t1.year, country1, percentage1, country2, percentage2
     FROM (
         SELECT c2.year, c2.country AS country1, c2.industry, emission / (SELECT SUM(emission)
-        FROM ESTELLEDENIS.CO2INDUSTRIESNORMALIZED c
+        FROM CO2INDUSTRIESNORMALIZED c
         WHERE c.year = c2.year AND c.country = c2.country) AS percentage1
-        FROM ESTELLEDENIS.CO2INDUSTRIESNORMALIZED c2
+        FROM CO2INDUSTRIESNORMALIZED c2
         WHERE c2.country = :firstCountry AND c2.industry = :industry) t1
         FULL JOIN (
         SELECT c4.year, c4.country AS country2, c4.industry, emission / (SELECT SUM(emission)
-        FROM ESTELLEDENIS.CO2INDUSTRIESNORMALIZED c3
+        FROM CO2INDUSTRIESNORMALIZED c3
         WHERE c3.year = c4.year AND c3.country = c4.country) AS percentage2
-        FROM ESTELLEDENIS.CO2INDUSTRIESNORMALIZED c4
+        FROM CO2INDUSTRIESNORMALIZED c4
         WHERE c4.country = :secondCountry AND c4.industry = :industry) t2
     ON t1.year = t2.year AND t1.industry = t2.industry
     ORDER BY year`;
