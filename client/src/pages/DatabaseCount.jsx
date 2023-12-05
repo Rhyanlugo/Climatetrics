@@ -37,7 +37,7 @@ export default function DatabaseCount() {
         ) : (
           <div className="inline-block min-w-full rounded-lg py-2 sm:px-6 lg:px-8">
             <div className="flex justify-center overflow-hidden">
-              <table className="text-center  font-light">
+              <table className="border-black  text-center font-light shadow-md">
                 <thead className="border-b font-medium dark:border-neutral-500">
                   <tr className="text-5xl">
                     <th scope="col" className="px-6 py-4 font-bold ">

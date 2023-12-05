@@ -258,7 +258,7 @@ export default function AcrossIndustriesByCountry() {
               bgColorBottom={styles['left-bg-less']}
             />
 
-            <div className="col-span-4 m-2 rounded-lg border bg-gray-300 shadow-md">
+            <div className="col-span-4 m-2 rounded-lg border bg-gray-300 shadow-lg">
               <CountriesMultiLineChart
                 labels={years}
                 firstCountry={selectedFirstCountry}

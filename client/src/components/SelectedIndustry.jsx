@@ -11,7 +11,7 @@ export default function SelectedIndustry({
         id="countries"
         value={selectedIndustry}
         onChange={(e) => setSelectedIndustry(e.target.value)}
-        className="mx-2 w-72 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+        className="mx-2 w-72 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 shadow-lg focus:border-blue-500 focus:ring-blue-500"
       >
         {industries.map((industry) => (
           <option key={industry.industryName} value={industry.industryName}>
